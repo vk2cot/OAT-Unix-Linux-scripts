@@ -1,0 +1,16 @@
+@(#)$Id: AUTHORS,v 1.1 2014/07/17 06:32:58 dusan Exp dusan $
+------------------------------------------------------------
+    _         _   _
+   / \  _   _| |_| |__   ___  _ __ ___
+  / _ \| | | | __| '_ \ / _ \| '__/ __|
+ / ___ \ |_| | |_| | | | (_) | |  \__ \
+/_/   \_\__,_|\__|_| |_|\___/|_|  |___/	
+------------------------------------------------------------
+
+Operations Acceptance Testing scripts for:
+
+SunOS/Solaris (including Solaris 11)
+Linux
+HP-UX
+
+Dusan Baljevic (dusan.baljevic@ieee.org)
