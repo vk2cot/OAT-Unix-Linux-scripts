@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# @(#) $Id: Linux-check-OAT.pl,v 1.27 2014/07/16 18:39:45 root Exp root $
+# @(#) $Id: Linux-check-OAT.pl,v 1.27 2014/07/21 17:46:08 root Exp root $
 #
 # Description: Basic Operations Acceptance Testing for Linux servers
 #              Results are displayed on stdout or redirected to a file
@@ -7041,17 +7041,17 @@ Set \"ENCRYPT_METHOD SHA512\" in \"$LOGINDEFS\"\n";
         $passno++;
         push( @Passnumarr, $entry[2] );
         if ( $entry[2] == 0 ) {
-            print "$INFOSTR Username $entry[0] has UID 0\n";
+            print "$INFOSTR Username \"$entry[0]\" has UID 0\n";
             $uidno++;
         }
 
         foreach my $raccess ( @remaccarr ) {
             my $racent = "$entry[7]/$raccess";
             if ( -s "$racent" && -T "$racent" ) {
-                print "\n$WARNSTR Username $entry[0] has $raccess\n";
+                print "\n$WARNSTR Username \"$entry[0]\" has $raccess\n";
                 my @aent = `cat $racent`;
                 print @aent;
-                push(@CHECKARR, "\n$WARNSTR Username $entry[0] has $raccess\n");
+                push(@CHECKARR, "\n$WARNSTR Username \"$entry[0]\" has $raccess\n");
                 push(@CHECKARR, @aent);
             }
         }
@@ -7059,35 +7059,35 @@ Set \"ENCRYPT_METHOD SHA512\" in \"$LOGINDEFS\"\n";
         my $epmode = (stat($entry[7]))[2];
 
         if ( $epmode & 0020 ) {
-            print "\n$WARNSTR Home directory for $entry[0] ($entry[7]) group-writable!\n";
-            push(@CHECKARR, "\n$WARNSTR Home directory for $entry[0] ($entry[7]) group-writable\n");
+            print "\n$WARNSTR Home directory for \"$entry[0]\" ($entry[7]) group-writable!\n";
+            push(@CHECKARR, "\n$WARNSTR Home directory for \"$entry[0]\" ($entry[7]) group-writable\n");
         }
 
         if ( $epmode & 0002 ) {
-            print "\n$WARNSTR Home directory for $entry[0] ($entry[7]) world-writable!\n";
-            push(@CHECKARR, "\n$WARNSTR Home directory for $entry[0] ($entry[7]) world-writable\n");
+            print "\n$WARNSTR Home directory for \"$entry[0]\" ($entry[7]) world-writable!\n";
+            push(@CHECKARR, "\n$WARNSTR Home directory for \"$entry[0]\" ($entry[7]) world-writable\n");
         }
 
         if ( grep(/^\$/, $entry[1]) ) { 
             my @passwdarr = split(/\$/, $entry[1]);
             if ( $#passwdarr eq 3 ) {
                 print
-"\n$INFOSTR Username $entry[0]: $PWHASHARR{$passwdarr[1]}, salt=$passwdarr[2], hashed-password-and-salt=$passwdarr[3]\n";
+"\n$INFOSTR Username \"$entry[0]\": $PWHASHARR{$passwdarr[1]}, salt=$passwdarr[2], hashed-password-and-salt=$passwdarr[3]\n";
             } elsif ( $#passwdarr eq 4 ) {
                 if ( $passwdarr[2] =~ /rounds=/ ) {
                     print
-"\n$INFOSTR Username $entry[0]: $PWHASHARR{$passwdarr[1]}, $passwdarr[2], salt=$passwdarr[3], hashed-password-and-salt=$passwdarr[4]\n";
+"\n$INFOSTR Username \"$entry[0]\": $PWHASHARR{$passwdarr[1]}, $passwdarr[2], salt=$passwdarr[3], hashed-password-and-salt=$passwdarr[4]\n";
                 }
                 elsif ( "$passwdarr[3]" eq "" ) {
                     print
-"\n$INFOSTR Username $entry[0]: $PWHASHARR{$passwdarr[1]}, salt=$passwdarr[2], hashed-password-and-salt=$passwdarr[4]\n";
+"\n$INFOSTR Username \"$entry[0]\": $PWHASHARR{$passwdarr[1]}, salt=$passwdarr[2], hashed-password-and-salt=$passwdarr[4]\n";
                }
                else {
                     print
-"\n$INFOSTR Username $entry[0]: $PWHASHARR{$passwdarr[1]}, salt=$passwdarr[2], hashed-password-and-salt=$passwdarr[4]\n";
+"\n$INFOSTR Username \"$entry[0]\": $PWHASHARR{$passwdarr[1]}, salt=$passwdarr[2], hashed-password-and-salt=$passwdarr[4]\n";
                 }
             } else {
-                print "\n$INFOSTR Username $entry[0]: ";
+                print "\n$INFOSTR Username \"$entry[0]\": ";
                 foreach my $passent ( @passwdarr) {
                     print "$passent ";
                 }
@@ -7095,14 +7095,14 @@ Set \"ENCRYPT_METHOD SHA512\" in \"$LOGINDEFS\"\n";
             }
 
             if ( length($passwdarr[$#passwdarr]) ne $PWLEN{$passwdarr[1]} ) {
-                print "$ERRSTR Incorrect length of encrypted password string for user $entry[0] (length($passwdarr[$#passwdarr] versus $PWLEN{$passwdarr[1]})\n";
+                print "$ERRSTR Incorrect length of encrypted password string for user \"$entry[0]\" (length($passwdarr[$#passwdarr] versus $PWLEN{$passwdarr[1]})\n";
             } else {
-                print "$PASSSTR Correct length of encrypted password string for user $entry[0] ($PWLEN{$passwdarr[1]} for $PWHASHARR{$passwdarr[1]})\n";
+                print "$PASSSTR Correct length of encrypted password string for user \"$entry[0]\" ($PWLEN{$passwdarr[1]} for $PWHASHARR{$passwdarr[1]})\n";
             }
         } else {
             if ( $entry[1] eq "x" ) {
-               print "\n$entry[0]: hashing-algorithm=UNDEFINED\n";
-               my @pw2 = `passwd -S $entry[0] 2>&1 | awk NF`;
+               print "\n\"$entry[0]\": hashing-algorithm=UNDEFINED\n";
+               my @pw2 = `passwd -S "$entry[0]" 2>&1 | awk NF`;
                if ( "@pw2" ) {
                    print
 "$INFOSTR Full password entry status for \"$entry[0]\" via \"passwd -S\" command \n";
@@ -7111,20 +7111,47 @@ Set \"ENCRYPT_METHOD SHA512\" in \"$LOGINDEFS\"\n";
             }
             else {
                 if ( ! grep(/!|\*/, $entry[1]) ) {
-                   print "\n$entry[0]: hashing-algorithm=DES\n";
+                   print "\n\"$entry[0]\": hashing-algorithm=DES\n";
 
                    if ( length($entry[1]) ne $DESLENGTH ) {
-                       print "$ERRSTR Incorrect length of encrypted password string for user $entry[0] (length($entry[1]) versus $DESLENGTH)\n";
+                       print "$ERRSTR Incorrect length of encrypted password string for user \"$entry[0]\" (length($entry[1]) versus $DESLENGTH)\n";
                    } else {
-                       print "$PASSSTR Correct length of encrypted password string for user $entry[0] ($DESLENGTH)\n";
+                       print "$PASSSTR Correct length of encrypted password string for user \"$entry[0]\" ($DESLENGTH)\n";
                    }
                 }
             }
         }
 
-        my @chage = `chage -l $entry[0] 2>/dev/null`;
+        # adduser and addgroup enforce conformity to IEEE Std
+        # 1003.1-2001, which allows only the following characters to
+        # appear in group and user names: letters, digits, underscores,
+        # periods, at signs (@), dollar sign ($), and dashes. The name
+        # may no start with # a dash.
+        # The "$" sign is allowed at the end of usernames (to
+        # conform with Samba).
+        #
+        # IEEE Std 1003.1-2001 is one of the POSIX standards.
+        # To be portable across systems conforming to
+        # IEEE Std 1003.1-2001, the value is composed of
+        # characters from the portable filename character set.
+        #
+        # POSIX compliance—and compatibility with other *NIX
+        # variants is one reason that adduser limits the characters
+        # in user names.
+        # 
+        # But the default NAME REGEX is even more restrictive than
+        # POSIX portable filename character set.
+        #
+        # ^[a-z][-a-z0-9]*$
+        # 
+        if ( ! grep(/^[a-zA-Z0-9\.\-\$\_]+$/, "$entry[0]") ) { 
+            print
+"\n$WARNSTR Username \"$entry[0]\" contains characters non-conformant with IEEE Std 1003.1-2001\n";
+        }
+
+        my @chage = `chage -l "$entry[0]" 2>/dev/null`;
         if ( @chage != 0 ) {
-            print "\n$INFOSTR Password expiry status for $entry[0]\n";
+            print "\n$INFOSTR Password expiry status for \"$entry[0]\"\n";
             print @chage;
         }
 
