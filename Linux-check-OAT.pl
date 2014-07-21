@@ -7146,7 +7146,7 @@ Set \"ENCRYPT_METHOD SHA512\" in \"$LOGINDEFS\"\n";
         # 
         if ( ! grep(/^[a-zA-Z0-9\.\-\$\_]+$/, "$entry[0]") ) { 
             print
-"\n$WARNSTR Username \"$entry[0]\" contains characters non-conformant with IEEE Std 1003.1-2001\n";
+"\n$WARNSTR Username \"$entry[0]\" contains characters non-conforming with IEEE Std 1003.1-2001\n";
         }
 
         my @chage = `chage -l "$entry[0]" 2>/dev/null`;
