@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# @(#) $Id: Linux-check-OAT.pl,v 1.27 2014/07/21 17:46:08 root Exp root $
+# @(#) $Id: Linux-check-OAT.pl,v 1.28 2014/08/31 18:07:36 root Exp root $
 #
 # Description: Basic Operations Acceptance Testing for Linux servers
 #              Results are displayed on stdout or redirected to a file
@@ -20,7 +20,7 @@
 #              -v        Print version of this script 
 #              -z        Enable SMART checks (smartctl)
 #
-# Last Update:  16 July 2014
+# Last Update:  31 August 2014
 # Designed by:  Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # Coded by:     Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # 
@@ -1062,7 +1062,7 @@ sub slurp {
 # Ensure that modules are loaded
 #
 BEGIN {
-    $SCRIPT_VERSION  = "2014071601";
+    $SCRIPT_VERSION  = "2014083101";
     $REC_VERSION     = '5.006';
     $BEST_VERSION    = '5.008';
     $CUR_VERSION     = "$]";
@@ -4621,6 +4621,12 @@ sub CHECK_MOUNTED_FILESYSTEMS {
                     if ( "@btrfssup" ) {
                         push(@BTRFSARR, "\n$INFOSTR BTRFS file system device $fsdev superblock status\n");
                         push(@BTRFSARR, @btrfssup);
+                    }
+
+                    my @btrfssub = `btrfs subvolume list $fsdev 2>/dev/null`;
+                    if ( "@btrfssub" ) {
+                        push(@BTRFSARR, "\n$INFOSTR BTRFS file system device $fsdev subvolumes\n");
+                        push(@BTRFSARR, @btrfssub);
                     }
                 }
 
@@ -12229,6 +12235,54 @@ sub checkKVM {
 
     datecheck();
     print_header("*** END CHECKING KVM VIRTUALIZATION $datestring ***");
+
+    datecheck();
+    print_header("*** BEGIN CHECKING SYSTEMD VIRTUALIZATION $datestring ***");
+
+    my @machinectlv = `machinectl --version 2>/dev/null`;
+    if ( "@machinectlv" ) {
+        print "$INFOSTR Systemd Virtual Machine and Container version\n";
+        print @machinectlv;
+
+        my @machinectll = `machinectl list 2>/dev/null`;
+        if ( "@machinectll" ) {
+            print "\n$INFOSTR Systemd Virtual Machine and Container status\n";
+            print @machinectll;
+        }
+    }
+    else {
+        print "$INFOSTR Systemd Virtual Machine and Container seemingly not installed\n";
+    }
+
+    datecheck();
+    print_header("*** END CHECKING SYSTEMD VIRTUALIZATION $datestring ***");
+
+    datecheck();
+    print_header("*** BEGIN CHECKING VIRTUALBOX VIRTUALIZATION $datestring ***");
+
+    my @vboxv = `VBoxManage -v 2>/dev/null`;
+    if ( "@vboxv" ) {
+        print "$INFOSTR VirtualBox version\n";
+        print @vboxv;
+
+        my @vboxprop = `VBoxManage list systemproperties 2>/dev/null`;
+        if ( "@vboxprop" ) {
+            print "\n$INFOSTR VirtualBox properties\n";
+            print @vboxprop;
+        }
+
+        my @vboxvms = `VBoxManage list vms 2>/dev/null`;
+        if ( "@vboxvms" ) {
+            print "\n$INFOSTR VirtualBox VMS\n";
+            print @vboxvms;
+        }
+    }
+    else {
+        print "$INFOSTR Systemd Virtual Machine and Container seemingly not installed\n";
+    }
+
+    datecheck();
+    print_header("*** END CHECKING VIRTUALBOX VIRTUALIZATION $datestring ***");
 }
 
 #
