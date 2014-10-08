@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
-# @(#) $Id: Linux-check-OAT.pl,v 1.28 2014/08/31 18:07:36 root Exp root $
 #
+# @(#) $Id: Linux-check-OAT.pl,v 1.30 2014/10/08 18:29:53 dusan Exp dusan $
+
 # Description: Basic Operations Acceptance Testing for Linux servers
 #              Results are displayed on stdout or redirected to a file
 #
@@ -20,7 +21,7 @@
 #              -v        Print version of this script 
 #              -z        Enable SMART checks (smartctl)
 #
-# Last Update:  31 August 2014
+# Last Update:  8 October 2014
 # Designed by:  Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # Coded by:     Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # 
@@ -92,6 +93,7 @@ $ENV{'PATH'} = "$ENV{PATH}:/usr/lib/rpm:/opt/resmon/bin:/usr/lbin/sysadm";
 $ENV{'PATH'} = "$ENV{PATH}:/opt/tivoli/tsm/server/bin:/var/cfengine/bin";
 $ENV{'PATH'} = "$ENV{PATH}:/opt/tivoli/tsm/client/ba/bin:/opt/adsmserv/bin";
 $ENV{'PATH'} = "$ENV{PATH}:/opt/Zimbra/bin:/opt/zimbra/bin:/opt/Zimbra/contrib";
+$ENV{'PATH'} = "$ENV{PATH}:/opt/quest/sbin:/opt/quest/bin";
 $ENV{'PATH'} = "$ENV{PATH}:/usr/local/qs/bin:/opt/qs/bin:/etc/init.d";
 
 #
@@ -1062,7 +1064,7 @@ sub slurp {
 # Ensure that modules are loaded
 #
 BEGIN {
-    $SCRIPT_VERSION  = "2014083101";
+    $SCRIPT_VERSION  = "2014100801";
     $REC_VERSION     = '5.006';
     $BEST_VERSION    = '5.008';
     $CUR_VERSION     = "$]";
@@ -5529,6 +5531,17 @@ sub checkkernel {
     datecheck();
     print_header("*** END BOOT TIMINGS $datestring ***");
 
+    my @SORTKERNEL = `rpm -qa kernel\* |sort -V 2>/dev/null`;
+    if ( @SORTKERNEL ) {
+        datecheck();
+        print_header("*** BEGIN CHECKING INSTALLED KERNEL VERSIONS $datestring ***");
+  
+        print @SORTKERNEL;
+
+        datecheck();
+        print_header("*** END CHECKING INSTALLED KERNEL VERSIONS $datestring ***");
+    }
+
     datecheck();
     print_header("*** BEGIN CHECKING KERNEL MODULES $datestring ***");
 
@@ -7141,7 +7154,7 @@ Set \"ENCRYPT_METHOD SHA512\" in \"$LOGINDEFS\"\n";
         # IEEE Std 1003.1-2001, the value is composed of
         # characters from the portable filename character set.
         #
-        # POSIX compliance—and compatibility with other *NIX
+        # POSIX compliance.and compatibility with other *NIX
         # variants is one reason that adduser limits the characters
         # in user names.
         # 
@@ -12352,6 +12365,56 @@ sub checkPowerBroker {
 }
 
 #
+# Subroutine to check PowerBroker
+#
+sub checkUPMQuestPrivilegeManager {
+    datecheck();
+    print_header("*** BEGIN CHECKING UPM QUEST PRIVILEGE MANAGER $datestring ***");
+
+    my @pminfo = `pminfo -s 2>/dev/null`;
+    if ( @pminfo != 0 ) {
+        print "$INFOSTR Status of UPM Privilege Manager installation\n";
+        print @pminfo;
+    }
+    else {
+        print "$INFOSTR UPM Privilege Manager seemingly not installed or configured\n";
+    }
+
+    my @pmclientinfo = `pmclientinfo 2>/dev/null`;
+    if ( @pmclientinfo != 0 ) {
+        print "\n$INFOSTR UPM Privilege Manager client status\n";
+        print @pmclientinfo;
+    }
+
+    my @pmloadcheck = `pmloadcheck 2>/dev/null`;
+    if ( @pmloadcheck != 0 ) {
+        print "\n$INFOSTR UPM Privilege Manager client registration status\n";
+        print @pmloadcheck;
+    }
+
+    my @pmsrvinfo = `pmsrvinfo 2>/dev/null`;
+    if ( @pmsrvinfo != 0 ) {
+        print "\n$INFOSTR UPM Privilege Manager policy server configuration\n";
+        print @pmsrvinfo;
+    }
+
+    my @pmpolicy = `pmpolicy masterstatus 2>/dev/null`;
+    if ( @pmpolicy != 0 ) {
+        print "\n$INFOSTR UPM Privilege Manager policy status across masters\n";
+        print @pmpolicy;
+    }
+
+    my @pmserviced = `pmserviced -s 2>/dev/null`;
+    if ( @pmserviced != 0 ) {
+        print "\n$INFOSTR UPM Privilege Manager service daemons\n";
+        print @pmserviced;
+    }
+
+    datecheck();
+    print_header("*** END CHECKING UPM QUEST PRIVILEGE MANAGER $datestring ***");
+}
+
+#
 # Subroutine to check /
 #
 sub checkTLDIR {
@@ -13027,6 +13090,7 @@ lan();
 start_shutdown_log();
 pwdbcheck();
 checkPowerBroker();
+checkUPMQuestPrivilegeManager();
 swapcheck();
 space();
 rootacc();
