@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
-#
-# @(#) $Id: Linux-check-OAT.pl,v 1.30 2014/10/08 18:29:53 dusan Exp dusan $
+
+# @(#) $Id: Linux-check-OAT.pl,v 6.10 2014/11/06 18:38:58 root Exp root $
 
 # Description: Basic Operations Acceptance Testing for Linux servers
 #              Results are displayed on stdout or redirected to a file
@@ -8,7 +8,7 @@
 # If you obtain this script via Web, convert it to Unix format. For example:
 # dos2unix -n Linux-check-OAT.pl.txt Linux-check-OAT.pl
 #
-# Usage:       Linux-check-OAT.pl [-c] [-h] [-f] [-n] [-o] [-r] [-t conffile] [-v] [-z] \
+# Usage:       Linux-check-OAT.pl [-c] [-h] [-f] [-n] [-o] [-r] [-t conffile] [-v] [-z] 
 #              [> `uname -n`-OAT-report.txt]
 #
 #              -c        Enable check of SUID/SGID files
@@ -21,7 +21,7 @@
 #              -v        Print version of this script 
 #              -z        Enable SMART checks (smartctl)
 #
-# Last Update:  8 October 2014
+# Last Update:  6 November 2014
 # Designed by:  Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # Coded by:     Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # 
@@ -1064,7 +1064,7 @@ sub slurp {
 # Ensure that modules are loaded
 #
 BEGIN {
-    $SCRIPT_VERSION  = "2014100801";
+    $SCRIPT_VERSION  = "2014110601";
     $REC_VERSION     = '5.006';
     $BEST_VERSION    = '5.008';
     $CUR_VERSION     = "$]";
@@ -4197,6 +4197,13 @@ sub ntp_check {
         print "$WARNSTR Standard or Chrony Network Time Protocol not running\n";
         push(@CHECKARR, "\n$WARNSTR Standard or Chrony Network Time Protocol not running\n");
         $warnings++;
+
+    }
+
+    my @TIMEDATE = `timedatectl status 2>/dev/null`;
+    if ( "@TIMEDATE" ) {
+        print "\n$INFOSTR System time and date status\n";
+        print @TIMEDATE;
     }
 
     datecheck();
@@ -6658,6 +6665,18 @@ sub PERFORMANCE_BASICS {
         print @MPSTAT;
     }
 
+    my @TUNEDADM = `tuned-adm list 2>/dev/null`;
+    if ( "@TUNEDADM" ) {
+        print "\n$INFOSTR Tuning profiles\n";
+        print @TUNEDADM;
+
+        my @TUNEDADMACT = `tuned-adm active 2>/dev/null`;
+        if ( "@TUNEDADMACT" ) {
+            print "\n$INFOSTR Tuning profile active status\n";
+            print @TUNEDADMACT;
+        }
+    }
+
     datecheck();
     print_header("*** END CHECKING BASIC PERFORMANCE $datestring ***");
 }
@@ -7630,6 +7649,7 @@ sub smtpchk {
 
     @port  = (25);
 
+
     my @POSTFIXARR = `ls /etc/postfix/* 2>/dev/null`;
 
     my @postr = `postfix status 2>/dev/null`;
@@ -8487,6 +8507,7 @@ sub swapcheck {
 "$INFOSTR Server has %d paging space%s in remote file system storage (network file system based)\n",
           $SWAP_NETWORK_NO, $SWAP_NETWORK_NO == 1 ? "" : "s";
 
+
         print "\n";
 
         # Minimum swap size (as per Unix Standard Build)
@@ -9016,6 +9037,7 @@ sub lancheck {
                         push( @NETCONFARR, "$_\n" );
                     }
                 }
+
                 close(NZ);
             }
             else {
@@ -9054,6 +9076,12 @@ sub lancheck {
     if ( @neti != 0 ) {
         print "\n$INFOSTR Active connections\n";
         print @neti;
+    }
+
+    my @NMCLICONN = `nmcli connection show 2>/dev/null`;
+    if ( "@NMCLICONN" ) {
+        print "\n$INFOSTR NetworkManager connections\n";
+        print @NMCLICONN;
     }
 
     my @ARPA = `arp -a`;
@@ -9131,6 +9159,12 @@ sub lancheck {
             }
         }
         close(NETN);
+    }
+
+    my @NMCLI = `nmcli nm status 2>/dev/null`;
+    if ( "@NMCLI" ) {
+        print "\n$INFOSTR NetworkManager status\n";
+        print @NMCLI;
     }
 
     my @NDDarrs = `mii-tool 2>/dev/null`;
