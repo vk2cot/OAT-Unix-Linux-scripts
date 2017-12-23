@@ -2,7 +2,7 @@
 eval 'exec perl -S $0 ${1+"$@"} 2>/dev/null'
   if 0;
 #
-# @(#) $Id: Solaris-check-OAT.pl,v 1.10 2014/05/05 12:45:26 root Exp root $
+# @(#) $Id: Solaris-check-OAT.pl,v 1.11 2017/10/28 17:35:46 root Exp root $
 #
 # Description: Basic Operations Acceptance Testing for Solaris servers
 #              Results are displayed on stdout or redirected to a file
@@ -21,11 +21,11 @@ eval 'exec perl -S $0 ${1+"$@"} 2>/dev/null'
 #              -t file             Read variables from a config file
 #              -v                  Print version of this script
 #
-# Last Update:  20 May 2014
+# Last Update:  28 October 2017
 # Designed by:  Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # Coded by:     Dusan U. Baljevic (dusan.baljevic@ieee.org)
 #
-# Copyright 2006-2014 Dusan Baljevic
+# Copyright 2006-2017 Dusan Baljevic
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

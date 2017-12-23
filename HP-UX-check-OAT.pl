@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# @(#) $Id: HP-UX-check-OAT.pl,v 1.5 2014/04/24 06:41:48 root Exp root $
+# @(#) $Id: HP-UX-check-OAT.pl,v 1.7 2017/07/13 16:41:48 root Exp root $
 #
 # Description: Basic Operations Acceptance Testing for HP-UX servers
 #              Results are displayed on stdout or redirected to a file
@@ -35,11 +35,11 @@
 #
 # Normally, OLA/R check is advisable to run in single-user mode.
 #
-# Last Update: 24 March 2014
+# Last Update: 13 July 2017
 # Designed by: Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # Coded by:    Dusan U. Baljevic (dusan.baljevic@ieee.org)
 #
-# Copyright 2006-2014 Dusan Baljevic
+# Copyright 2006-2017 Dusan Baljevic
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# @(#) $Id: Linux-check-OAT.pl,v 6.10 2014/11/06 18:38:58 root Exp root $
+# @(#) $Id: Linux-check-OAT.pl,v 6.11 2017/12/24 10:11:32 root Exp root $
 
 # Description: Basic Operations Acceptance Testing for Linux servers
 #              Results are displayed on stdout or redirected to a file
@@ -21,7 +21,7 @@
 #              -v        Print version of this script 
 #              -z        Enable SMART checks (smartctl)
 #
-# Last Update:  6 November 2014
+# Last Update:  24 December 2017
 # Designed by:  Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # Coded by:     Dusan U. Baljevic (dusan.baljevic@ieee.org)
 # 
@@ -29,7 +29,7 @@
 # His contribution is also recognised for numerous suggestions
 # for additional tests.
 #
-# Copyright 2006-2014 Dusan Baljevic
+# Copyright 2006-2017 Dusan Baljevic
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@ $ENV{'PATH'} = "$ENV{PATH}:/opt/tivoli/tsm/client/ba/bin:/opt/adsmserv/bin";
 $ENV{'PATH'} = "$ENV{PATH}:/opt/Zimbra/bin:/opt/zimbra/bin:/opt/Zimbra/contrib";
 $ENV{'PATH'} = "$ENV{PATH}:/opt/quest/sbin:/opt/quest/bin";
 $ENV{'PATH'} = "$ENV{PATH}:/usr/local/qs/bin:/opt/qs/bin:/etc/init.d";
+$ENV{'PATH'} = "$ENV{PATH}:/usr/lpp/mmfs/bin";
 
 #
 # Define Shell
@@ -13063,6 +13064,104 @@ sub coreadm {
 
     datecheck();
     print_header("*** END CHECKING CORE PATTERN ADMINISTRATION $datestring ***");
+}
+
+#
+# Subroutine to check if running in virtual machine 
+#
+sub checkVIRT {
+    datecheck();
+    print_header("*** BEGIN CHECKING GPFS $datestring ***");
+
+    my @MMGETSTATE = `mmgetstate -a -L 2>/dev/null`;
+    if ( @MMGETSTATE ) {
+        print "\n$INFOSTR IBM GPFS seemingly active\n";
+        print @MMGETSTATE;
+
+        my @MMLSCLUSTER = `mmlscluster 2>/dev/null`;
+        if ( @MMLSCLUSTER ) {
+            print "\n$INFOSTR IBM GPFS cluster status\n";
+            print @MMLSCLUSTER;
+        }
+
+        my @MMLSCONFIG = `mmlsconfig 2>/dev/null`;
+        if ( @MMLSCONFIG ) {
+            print "\n$INFOSTR IBM GPFS config\n";
+            print @MMLSCONFIG;
+        }
+
+        my @MMDIAGCONFIG = `mmdiag --config 2>/dev/null`;
+        if ( @MMDIAGCONFIG ) {
+            print "\n$INFOSTR IBM GPFS full config\n";
+            print @MMDIAGCONFIG;
+        }
+
+        my @MMLSNODE = `mmlsnode -a 2>/dev/null`;
+        if ( @MMLSNODE ) {
+            print "\n$INFOSTR IBM GPFS node status\n";
+            print @MMLSNODE;
+        }
+
+        my @MMLSNSD = `mmlsnsd -L 2>/dev/null`;
+        if ( @MMLSNSD ) {
+            print "\n$INFOSTR IBM GPFS Network Shared Disk (NSD) status\n";
+            print @MMLSNSD;
+        }
+
+        my @MMLSFS = `mmlsfs all 2>/dev/null`;
+        if ( @MMLSFS ) {
+            print "\n$INFOSTR IBM GPFS file system status\n";
+            print @MMLSFS;
+        }
+
+        my @MMLSMOUNT = `mmlsmount all -L 2>/dev/null`;
+        if ( @MMLSMOUNT ) {
+            print "\n$INFOSTR IBM GPFS mount status\n";
+            print @MMLSMOUNT;
+        }
+
+        my @MMLSLICENSE = `mmlslicense -L 2>/dev/null`;
+        if ( @MMLSLICENSE ) {
+            print "\n$INFOSTR IBM GPFS license status\n";
+            print @MMLSLICENSE;
+        }
+
+        my @MMHEALTHNODE = `mmhealth node show --verbose 2>/dev/null`;
+        if ( @MMHEALTHNODE ) {
+            print "\n$INFOSTR IBM GPFS health node status\n";
+            print @MMHEALTHNODE;
+        }
+
+        my @MMHEALTHCLUS = `mmhealth cluster show 2>/dev/null`;
+        if ( @MMHEALTHCLUS ) {
+            print "\n$INFOSTR IBM GPFS health cluster status\n";
+            print @MMHEALTHCLUS;
+        }
+
+        my @MMHEALTHTHRES = `mmhealth thresholds list 2>/dev/null`;
+        if ( @MMHEALTHTHRES ) {
+            print "\n$INFOSTR IBM GPFS thresholds\n";
+            print @MMHEALTHTHRES;
+        }
+
+        my @MMLSWAITERS = `mmlsnode -N waiters -L 2>/dev/null`;
+        if ( @MMLSWAITERS ) {
+            print "\n$INFOSTR IBM GPFS waiters\n";
+            print @MMLSWAITERS;
+        }
+
+        my @MMDIAGNET = `mmdiag --network 2>/dev/null`;
+        if ( @MMDIAGNET ) {
+            print "\n$INFOSTR IBM GPFS mmdiag network\n";
+            print @MMDIAGNET;
+        }
+
+        my @MMNETVERIFY = `mmnetverify connectivity -N all -T all 2>/dev/null`;
+        if ( @MMNETVERIFY ) {
+            print "\n$INFOSTR IBM GPFS network verification\n";
+            print @MMNETVERIFY;
+        }
+    }
 }
 
 # Read in file with variables
