@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# @(#) $Id: Linux-check-OAT.pl,v 6.11 2017/12/24 10:11:32 root Exp root $
+# @(#) $Id: Linux-check-OAT.pl,v 6.11 2017/12/24 11:12:45 root Exp root $
 
 # Description: Basic Operations Acceptance Testing for Linux servers
 #              Results are displayed on stdout or redirected to a file
@@ -13069,7 +13069,7 @@ sub coreadm {
 #
 # Subroutine to check if running in virtual machine 
 #
-sub checkVIRT {
+sub checkGPFS {
     datecheck();
     print_header("*** BEGIN CHECKING GPFS $datestring ***");
 
@@ -13279,6 +13279,7 @@ check_cfengine();
 check_puppet();
 check_chef();
 checkVMware();
+checkGPFS(); 
 BasSeccheck();
 checkOracle();
 checkreboots();
